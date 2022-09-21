@@ -1,0 +1,37 @@
+name: delete blob storage container
+description: Deletes the given blob from the given container within the given storage account.
+inputs:
+  azure-credentials:
+    description: Credentials that are used to perform the azure login.
+    required: true
+  account-name:
+    description: Name of the storage account of the container to delete the blob from.
+    required: true
+  container-name:
+    description: Name of the container to delete the blob from.
+    required: true
+  blob-name:
+    description: Name of the blob. If the name is a prefix all blobs with the given prefix are deletet.
+    required: true
+    
+runs:
+  using: composite
+  steps:
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ inputs.azure-credentials }}
+    
+    - name: Azure CLI Action
+      uses: Azure/cli@v1
+      with:
+        inlineScript: |
+          blobs = "$(az storage blob list --account-name ${{ inputs.account-name }} --container-name ${{ inputs.container-name }} --prefix ${{ inputs.blob-name }} --auth-mode login"
+          echo "$blobs"
+#for i in $repositoryTags; do if [ $i = ${{ inputs.tag }} ]; then echo "Tag $i found in repository. Deleting..."; az acr repository delete --name ${{ inputs.acr-name }} --image ${{ inputs.repository }}:${{ inputs.tag }} --yes; fi; done
+
+    - name: Azure Logout
+      uses: Azure/cli@v1
+      with:
+        inlineScript: |
+          az logout
