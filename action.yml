@@ -13,7 +13,7 @@ inputs:
   blob-name:
     description: Name of the blob. If the name is a prefix all blobs with the given prefix are deletet.
     required: true
-    
+
 runs:
   using: composite
   steps:
@@ -26,7 +26,7 @@ runs:
       uses: Azure/cli@v1
       with:
         inlineScript: |
-          blobs = "$(az storage blob list --account-name ${{ inputs.account-name }} --container-name ${{ inputs.container-name }} --prefix ${{ inputs.blob-name }} --auth-mode login"
+          blobs = "$(az storage blob list --account-name ${{ inputs.account-name }} --container-name ${{ inputs.container-name }} --prefix ${{ inputs.blob-name }} --auth-mode login)"
           echo "$blobs"
 #for i in $repositoryTags; do if [ $i = ${{ inputs.tag }} ]; then echo "Tag $i found in repository. Deleting..."; az acr repository delete --name ${{ inputs.acr-name }} --image ${{ inputs.repository }}:${{ inputs.tag }} --yes; fi; done
 
