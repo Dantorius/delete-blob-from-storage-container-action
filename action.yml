@@ -33,6 +33,16 @@ runs:
           echo "$blobs"
 #for i in $repositoryTags; do if [ $i = ${{ inputs.tag }} ]; then echo "Tag $i found in repository. Deleting..."; az acr repository delete --name ${{ inputs.acr-name }} --image ${{ inputs.repository }}:${{ inputs.tag }} --yes; fi; done
 
+    - name: magic
+      shell: pwsh
+      run: |
+        $storageAccountContext = New-AzureStorageContext -StorageAccountName '${{ inputs.account-name }}' -StorageAccountKey '${{ inputs.account-key }}'
+        $blobs = Get-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
+        foreach($blob in $blobs) {
+          Write-Output "Removing blob '$($blob.Name)'' from container '${{ inputs.container-name }}'"
+        }
+#          Remove-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
+
     - name: Azure Logout
       uses: Azure/cli@v1
       with:
