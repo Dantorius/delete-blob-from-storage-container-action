@@ -23,6 +23,7 @@ runs:
     - name: magic
       shell: pwsh
       run: |
+        Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
         $storageAccountContext = New-AzureStorageContext -StorageAccountName '${{ inputs.account-name }}' -StorageAccountKey '${{ inputs.account-key }}'
         $blobs = Get-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
         foreach($blob in $blobs) {
