@@ -20,19 +20,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Azure Login
-      uses: Azure/login@v1
-      with:
-        creds: ${{ inputs.azure-credentials }}
-    
-    - name: Azure CLI Action
-      uses: Azure/cli@v1
-      with:
-        inlineScript: |
-          blobs = "$(az storage blob list --account-name ${{ inputs.account-name }} --container-name ${{ inputs.container-name }} --prefix ${{ inputs.blob-name }} --auth-mode key --account-key ${{ inputs.account-key }})"
-          echo "$blobs"
-#for i in $repositoryTags; do if [ $i = ${{ inputs.tag }} ]; then echo "Tag $i found in repository. Deleting..."; az acr repository delete --name ${{ inputs.acr-name }} --image ${{ inputs.repository }}:${{ inputs.tag }} --yes; fi; done
-
     - name: magic
       shell: pwsh
       run: |
@@ -42,9 +29,3 @@ runs:
           Write-Output "Removing blob '$($blob.Name)'' from container '${{ inputs.container-name }}'"
         }
 #          Remove-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
-
-    - name: Azure Logout
-      uses: Azure/cli@v1
-      with:
-        inlineScript: |
-          az logout
