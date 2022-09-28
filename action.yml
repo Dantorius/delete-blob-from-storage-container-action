@@ -20,13 +20,21 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: magic
-      shell: pwsh
-      run: |
-        Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
-        $storageAccountContext = New-AzureStorageContext -StorageAccountName '${{ inputs.account-name }}' -StorageAccountKey '${{ inputs.account-key }}'
-        $blobs = Get-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
-        foreach($blob in $blobs) {
-          Write-Output "Removing blob '$($blob.Name)'' from container '${{ inputs.container-name }}'"
-        }
+    - name: Az Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ inputs.azure-credentials }}
+        enable-AzPSSession: true
+
+    - name: Find and delete blobs
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          $storageAccountContext = New-AzureStorageContext -StorageAccountName '${{ inputs.account-name }}' -StorageAccountKey '${{ inputs.account-key }}'
+          $blobs = Get-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
+          foreach($blob in $blobs) {
+            Write-Output "Removing blob '$($blob.Name)'' from container '${{ inputs.container-name }}'"
+          }
+        azPSVersion: "latest"
 #          Remove-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
+#          Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
