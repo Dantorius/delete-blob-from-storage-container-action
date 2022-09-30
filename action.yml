@@ -1,9 +1,6 @@
 name: delete blob storage container
 description: Deletes the given blob from the given container within the given storage account.
 inputs:
-  azure-credentials:
-    description: Credentials that are used to perform the azure login.
-    required: true
   account-name:
     description: Name of the storage account of the container to delete the blob from.
     required: true
@@ -13,28 +10,15 @@ inputs:
   container-name:
     description: Name of the container to delete the blob from.
     required: true
-  blob-name:
-    description: Name of the blob. If the name is a prefix all blobs with the given prefix are deletet.
+  pattern:
+    description: Pattern to search for and delete within the container.
     required: true
 
 runs:
   using: composite
   steps:
-    - name: Az Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ inputs.azure-credentials }}
-        enable-AzPSSession: true
-
-    - name: Find and delete blobs
-      uses: azure/powershell@v1
+    - name: Azure CLI Action
+      uses: azure/cli@v2
       with:
         inlineScript: |
-          $storageAccountContext = New-AzureStorageContext -StorageAccountName '${{ inputs.account-name }}' -StorageAccountKey '${{ inputs.account-key }}'
-          $blobs = Get-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
-          foreach($blob in $blobs) {
-            Write-Output "Removing blob '$($blob.Name)'' from container '${{ inputs.container-name }}'"
-          }
-        azPSVersion: "latest"
-#          Remove-AzureStorageBlob -Context $storageAccountContext -Container '${{ inputs.container-name }}' -Blob '${{ inputs.blob-name }}'
-#          Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+          az storage blob delete-batch --account-key = ${{ inputs.account-key }} --account-name ${{ inuts.account-name }} --source $ {{ inputs.container-name }} --pattern $ {{ inputs.pattern }}
