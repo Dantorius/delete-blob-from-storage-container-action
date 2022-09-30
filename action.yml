@@ -21,4 +21,4 @@ runs:
       uses: azure/cli@v2
       with:
         inlineScript: |
-          az storage blob delete-batch --account-key = ${{ inputs.account-key }} --account-name ${{ inuts.account-name }} --source $ {{ inputs.container-name }} --pattern $ {{ inputs.pattern }}
+          az storage blob delete-batch --account-key = ${{ inputs.account-key }} --account-name ${{ inputs.account-name }} --source $ {{ inputs.container-name }} --pattern $ {{ inputs.pattern }}
